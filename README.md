@@ -4,6 +4,17 @@ get list from spotify and crawl audios from youtube.
 
 This is a developing branch.
 
+# Install requirements
+
+```
+pip install -r requirement.txt
+```
+
+# Run
+
+```
+python main.py
+```
 
 # Saving path:
 
