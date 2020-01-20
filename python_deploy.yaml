@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Job
+metadata:
+  name: spotify-crawler
+spec:
+  selector:
+    matchLabels:
+      app: spotify-crawler
+  template:
+    metadata:
+      labels:
+        app: spotify-crawler
+    spec:
+      containers:
+        - name: spotify-crawler
+          image: lab-registry.corp.ailabs.tw/group-ai-music/spotify-crawler:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: youtube-audios-2
+              mountPath: /volume/youtube-audios-2
+      volumes:
+        - name: youtube-audios-2
+          persistentVolumeClaim:
+            claimName: youtube-audios-2
+
+      imagePullSecrets:
+        - name: secret-gitlab
