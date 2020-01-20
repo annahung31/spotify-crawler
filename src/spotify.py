@@ -20,8 +20,8 @@ class SP_Search(object):
         For more information, please visit: https://github.com/plamere/spotipy/issues/194 
         '''
 
-        client_credentials_manager = SpotifyClientCredentials(client_id='cb296c8971c6476a90d822fbbcb1f2e6', 
-                                                            client_secret='c89422a89f844539a0067e58981356ec')
+        client_credentials_manager = SpotifyClientCredentials(client_id='', 
+                                                            client_secret='')
         token = client_credentials_manager.get_access_token()
         sp = spotipy.Spotify(auth=token)
 
