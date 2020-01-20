@@ -13,11 +13,11 @@ spec:
     spec:
       containers:
         - name: spotify-crawler
-          image: lab-registry.corp.ailabs.tw/group-ai-music/spotify-crawler:latest
+          image:
           imagePullPolicy: Always
           volumeMounts:
             - name: youtube-audios-2
-              mountPath: /volume/youtube-audios-2
+              mountPath:
       volumes:
         - name: youtube-audios-2
           persistentVolumeClaim:
