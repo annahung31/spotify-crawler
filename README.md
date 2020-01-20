@@ -9,6 +9,11 @@ This is a developing branch.
 ```
 pip install -r requirement.txt
 ```
+You might also need to install `ffmpeg` for processing audios:
+```
+apt-get install -y ffmpeg
+```
+
 
 # Run
 
