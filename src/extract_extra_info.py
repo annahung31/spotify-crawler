@@ -3,14 +3,14 @@
 import json
 import os
 import glob
-import ipdb
+import time
 from spotify import SP_Search
 
 
 def spotify_feature():
     sp_search = SP_Search()
 
-    metas_path = '/volume/youtube-audios-2/metas/chinese/*/*_sp.json'
+    metas_path = '/volume/youtube-audios-2/metas/all/*/*_sp.json'
     track_docs = glob.glob(metas_path)
 
     for track_doc in track_docs:
@@ -23,6 +23,7 @@ def spotify_feature():
         
                 spotify_ID = track['uri'] 
                 audio_feature = {}
+                time.sleep(5)
                 low_level, high_level = sp_search.get_audio_features(spotify_ID)
                 audio_feature['low_level'] = low_level
                 audio_feature['high_level'] = high_level

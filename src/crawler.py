@@ -43,6 +43,7 @@ class Crawler(object):
             url = item['url']
             filename = 'album_cover_'+ size +'.jpg'
             cover_path = os.path.join(saving_path, filename)
+            time.sleep(2)
             with open( cover_path , 'wb') as handle:
                     response = requests.get(url, stream=True)
 
@@ -71,41 +72,42 @@ class Crawler(object):
             'noplaylist': True,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
+                # 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
             'logger': MyLogger(),
             'progress_hooks': [my_hook],
             'outtmpl': audio_out_dir
         }
-        try:
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                # ydl.download([url])
-                meta = ydl.extract_info(url, download = False)
+        
+    
+        print(url)
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            # ydl.download([url])
+            meta = ydl.extract_info(url, download = False)
 
-            if 'Music' in meta['categories']:
-                meta = ydl.extract_info(url, download = True)
+        if meta is not None and 'Music' in meta['categories']:
+            meta = ydl.extract_info(url, download = True)
 
-                if self.SAVE_INFO:
-                    with open(yt_metas_out_dir + 'json', 'w') as f:
-                        json.dump(meta, f)
-                    with open(sp_metas_out_dir + 'json', 'w') as f:
-                        json.dump(sp_info, f)
+            if self.SAVE_INFO:
+                with open(yt_metas_out_dir + 'json', 'w') as f:
+                    json.dump(meta, f)
+                with open(sp_metas_out_dir + 'json', 'w') as f:
+                    json.dump(sp_info, f)
 
-                if self.DISPLAY:
-                    for i in range(len(meta.keys())):
-                        info = list(meta.keys())[i]
-                        print('{}: {}'.format(info, meta[info]))
-                
-                file_idx += 1
-                return file_idx, youtube_ID
+            if self.DISPLAY:
+                for i in range(len(meta.keys())):
+                    info = list(meta.keys())[i]
+                    print('{}: {}'.format(info, meta[info]))
+            
+            file_idx += 1
+            return file_idx, youtube_ID
 
-            else:
-                return file_idx, None
-
-        except:
+        else:
             return file_idx, None
 
+
+        
     def run(self, album_idx, file_idx, youtube_ID, sp_info, audio_folder_name, metas_folder_name):
 
         file_idx, youtube_ID = self.crawl(audio_folder_name, metas_folder_name, file_idx, youtube_ID, sp_info)

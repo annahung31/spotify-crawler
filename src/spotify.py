@@ -20,8 +20,8 @@ class SP_Search(object):
         For more information, please visit: https://github.com/plamere/spotipy/issues/194 
         '''
 
-        client_credentials_manager = SpotifyClientCredentials(client_id='', 
-                                                            client_secret='')
+        client_credentials_manager = SpotifyClientCredentials(client_id='cb296c8971c6476a90d822fbbcb1f2e6', 
+                                                            client_secret='c89422a89f844539a0067e58981356ec')
         token = client_credentials_manager.get_access_token()
         sp = spotipy.Spotify(auth=token)
 
@@ -204,7 +204,7 @@ class SP_Search(object):
 
 
     def run_by_track(self, year, list_num):
-        PATH = '../download_list/all_track/'
+        PATH = '../download_list/all_track/2018'
         track_num = 0
         for i in range(list_num):
             tracks = self.search_by_track(year, i)
@@ -212,9 +212,12 @@ class SP_Search(object):
                 name = track['name']
                 release_date = track['album']['release_date'] 
                 uri = track['uri']
-                self.save_downloadlist(track, name, release_date, uri, PATH)
+                try:
+                    self.save_downloadlist(track, name, release_date, uri, PATH)
+                    track_num += 1
+                except:
+                    continue            
                 
-                track_num += 1
         
         print('{}: {} tracks.'.format(year, track_num))
 
@@ -222,6 +225,13 @@ class SP_Search(object):
 
 #Spotify URI: 'spotify:artist:4Z8W4fKeB5YxbusRsdQVPb'
 #track URI: "spotify:track:7pk3EpFtmsOdj8iUhjmeCM"
+
+def main_by_track(only_chinese):
+    year = 2018
+    list_num = 100000000000000000000
+    print('='*50, 'year:', year)
+    sp_search = SP_Search()
+    sp_search.run_by_track(year, list_num)        
 
 
 def main(only_chinese):
@@ -237,32 +247,28 @@ def main(only_chinese):
             track_list = sp_search.run_chinese(year, list_num)
 
     else:
-        year = 2019
+        year = 2020
         for i in range(119):
+            
             try:
                 year -= 1
-                list_num = 1000000  #total album num = list_num * 50
+                list_num = 100000000000000000000  #total album num = list_num * 50
                 print('='*50, 'year:', year)
                 sp_search = SP_Search()
-                sp_search.run_by_track(year, list_num)
+                sp_search.run(year, list_num)
 
             except Exception as e:
                 print(e)
+                time.sleep(30)
                 continue
-
-
-
-
-        # except:
-            # time.sleep(100)
-            # continue
+            break
         
+
 
 
 if __name__ == "__main__":
     only_chinese = False
     main(only_chinese)
-
 
 
 '''

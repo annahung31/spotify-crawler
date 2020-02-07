@@ -8,11 +8,13 @@ import time
 import os
 import json
 import glob
+import logging
 import argparse
+import random
 from spotify import SP_Search
 from youtube import YT_Search
 from crawler import Crawler
-
+from utils import *
 def download_tracks_from_album(yt_search, crawler, tracks_in_album, album_idx, audio_folder_name, metas_folder_name):
     #start crawling tracks in the album        
     file_idx = 0
@@ -20,34 +22,30 @@ def download_tracks_from_album(yt_search, crawler, tracks_in_album, album_idx, a
     for track in tracks_in_album:
         title, youtube_ID = yt_search.run(track)
         if (youtube_ID is not None) and (youtube_ID not in crawled_youtube_id):
+            time.sleep(2)
             file_idx, youtube_ID = crawler.run(album_idx, file_idx, youtube_ID, track, audio_folder_name, metas_folder_name)
-            print('{:15} <<{}>> '.format('downloaded:', title))
-            crawled_youtube_id.append(youtube_ID)
+            if youtube_ID is not None:
+                print('{:15} <<{}>> '.format('downloaded:', title))
+                crawled_youtube_id.append(youtube_ID)
+            else:
+                print('Some error happened, not downloaded.')
     return file_idx
 
 
 def get_album_info(download_list_path, downloaded_album_path):
     album_doc = glob.glob(download_list_path)
+    random.shuffle(album_doc)
     
     #check how many album has been downloaded when first launch.
     with open( downloaded_album_path , mode='r', encoding='utf-8') as f:
         downloaded_list = f.read().splitlines()
-
-    if len(downloaded_list) == 0:
         downloaded_num =  len(downloaded_list)
-    else:
-        downloaded_num =  len(downloaded_list) - 1
 
     print('there are {} album already downloaded'.format(downloaded_num))
 
     return album_doc, downloaded_list, downloaded_num
 
 
-
-def check_exist(dirnames):
-    for dirname in dirnames:
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
 
 
 def main(download_list_path, downloaded_album_path, audio_PATH, metas_PATH):
@@ -56,12 +54,14 @@ def main(download_list_path, downloaded_album_path, audio_PATH, metas_PATH):
     crawler = Crawler(audio_PATH, metas_PATH)
 
     album_doc, downloaded_list, downloaded_num = get_album_info(download_list_path, downloaded_album_path)
-    
     album_idx = downloaded_num
 
+    take_a_break = 0
     for album in album_doc:
+        st = time.time()
         audio_folder_name = os.path.join(audio_PATH, "%07d" % album_idx)
         metas_folder_name = os.path.join(metas_PATH, "%07d" % album_idx)
+    
         check_exist([audio_folder_name, metas_folder_name])
         album_info_path = os.path.join(metas_folder_name, 'album_info.json')
 
@@ -89,9 +89,21 @@ def main(download_list_path, downloaded_album_path, audio_PATH, metas_PATH):
                 with open( downloaded_album_path , mode='a', encoding='utf-8') as myfile:
                     myfile.write('\n' + album_ID)
                 downloaded_list.append(album_ID)
-
                 album_idx += 1
 
+
+                #Visualize
+                print('*'*50)
+                print('*', 'Spend %.2f s to download.'%(time.time() - st))
+                print('*', 'Contain {} tracks.'.format(file_idx))
+                print('*'*50)
+
+
+
+        take_a_break += 1
+        if take_a_break  == 100:
+            print('Take a break....')
+            time.sleep(600)
                 
 
 

@@ -35,6 +35,7 @@ class YT_Search(object):
     def get_soup(self, url, parser='html.parser'):
         headers = {'User-Agent': 'Mozilla/5.0'}
         try:
+            time.sleep(2)
             response = requests.get(url, headers=headers)
         except:
             time.sleep(100)
